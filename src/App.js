@@ -13,13 +13,16 @@ const App = () => {
 const Dogs = () => {
   const [data, setData] = useState([]);
   const [query, setQuery] = useState('v');
+  const [loading, setLoading] = useState(true);
   const SearchValue = useRef('');
 
   useEffect(() => {
     axios(
       {
         method: 'GET',
-        url: `https://api.thedogapi.com/v1/breeds/search?q=${query}`,
+        url: `https://api.thedogapi.com/v1/breeds/search?q=${
+          query === '' ? 'v' : query
+        }`,
         headers: {
           'x-api-key': '4bd37ea1-9401-4e1f-946f-f3842cf15e91',
         },
@@ -35,7 +38,8 @@ const Dogs = () => {
       .catch((error) => {
         console.error(error);
       });
-  });
+    setLoading(false);
+  }, [query]);
   return (
     <div className="app">
       <h1>Learn About Dogs</h1>
@@ -46,9 +50,13 @@ const Dogs = () => {
         placeholder="Enter dog breed name"
       />
       <div className="cards">
-        {data.map((dog) => (
-          <DogBreed key={dog.id} dog={dog} />
-        ))}
+        {data.length < 1 ? (
+          <h1 style={{ display: 'grid', placeItems: 'center' }}>
+            NO RESULTS...PLEASE TRY ANOTHER QUERY!
+          </h1>
+        ) : (
+          data.map((dog) => <DogBreed key={dog.id} dog={dog} />)
+        )}
       </div>
     </div>
   );
